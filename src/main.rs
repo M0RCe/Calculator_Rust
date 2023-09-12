@@ -81,11 +81,13 @@ fn main() {
     println!("Ввод операций (сложение, вычитание, умножение, деление): ");
 
     let favoper = loop {
-        let safe_op: Vec<String> = read_calc_op!();
+        let mut safe_op: Vec<String> = read_calc_op!();
         let mut safe_op_err: bool = false;       // false значит ошибок нет
-        for i in &safe_op {
-            if opers.contains_key::<str>(&i) {
-                i = opers.get::<str>(&i);
+        for val in &mut safe_op {
+            if opers.contains_key::<str>(&val) {
+                for (k, v) in opers.iter() {
+                    if k == val { *val = v.to_string(); }
+                }
                 continue; 
             }
             safe_op_err = true;
@@ -93,4 +95,5 @@ fn main() {
         if safe_op_err == false && safe_op.len() == (favindex.len() - 1) { break safe_op; }
         println!("Ошибка с операциями. Имеем: {}. Нужно: {}", safe_op.len(), favindex.len()-1);
     };
+   println!("{:?}", favoper);
 }
