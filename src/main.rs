@@ -49,12 +49,27 @@ macro_rules! read_digit_exit {
         }
     };
 }
+macro_rules! read_digits_float {
+    () => {
+        {
+            let mut str = String::new();
+            let mut arr: Vec<f32> = Vec::new();
+            std::io::stdin().read_line(&mut str).expect("Не удалось прочесть строку");
+            let split_str = str.trim().split_whitespace();
+            for (_, val) in split_str.enumerate() {
+                let int_val: f32 = val.parse().expect("Ожидался тип с плавающей точкой");
+                arr.push(int_val);
+            }
+            arr
+        }
+    };
+}
 
-fn enter_array() -> Vec<i32> {
+fn enter_array() -> Vec<f32> {
     let arrlen = read_digit!();
     println!("\nРазмер массива: {arrlen}");
-    let arr: Vec<i32> = loop {
-        let safe_arr: Vec<i32> = read_digits!();    
+    let arr: Vec<f32> = loop {
+        let safe_arr: Vec<f32> = read_digits_float!();    
         if safe_arr.len() as i32 == arrlen { break safe_arr; }
         println!("Ошибка с кол-вом элементов массива. Имеем: {}. Нужно: {arrlen}", safe_arr.len());
     };
@@ -65,8 +80,8 @@ fn enter_array() -> Vec<i32> {
     arr
 }
 
-fn choose_elem(arr: &Vec<i32>) -> Vec<i32> {
-    let mut newarr: Vec<i32> = Vec::new();
+fn choose_elem(arr: &Vec<f32>) -> Vec<f32> {
+    let mut newarr: Vec<f32> = Vec::new();
     let favindex: Vec<i32> = loop {
         let ind: Vec<i32> = read_digits!();
         for i in &ind {
@@ -111,17 +126,17 @@ fn choose_op(arrlen: usize) -> Vec<String> {
     };
     favoper
 }
-// 5*3-9/3*2-5 -> 15-6-5
-fn calc_fin(arr: &mut Vec<i32>, op: &mut Vec<String>) {
-    let mut answer: i32;
+// 5*3-9/3*2-5 -> 15-6-5 -> 4
+fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
+    let mut answer: f32 = 0.0;
     let mut op_seq: Vec<usize> = Vec::new();
     for i in 0..op.len() {
         if op[i] == "*" || op[i] == "/" { op_seq.push(i) }
     }
     for val in op_seq.iter() {
-        let digit1: i32 = arr[*val as usize];
-        let digit2: i32 = arr[val + 1];
-        let new_digit: i32;
+        let digit1: f32 = arr[*val as usize];
+        let digit2: f32 = arr[val + 1];
+        let new_digit: f32;
         match &op[*val] as &str {
             "*" => { new_digit = digit1 * digit2 },
             "/" => { new_digit = digit1 / digit2 },
@@ -133,7 +148,6 @@ fn calc_fin(arr: &mut Vec<i32>, op: &mut Vec<String>) {
         
         answer = arr[val + 1];
     }
-    
     if !op_seq.is_empty() {
         op_seq.reverse();
         for val in &op_seq {
@@ -142,18 +156,16 @@ fn calc_fin(arr: &mut Vec<i32>, op: &mut Vec<String>) {
         }
         op_seq.clear();
     }
-
     for i in 0..op.len() {
         if op[i] == "+" || op[i] == "-" { op_seq.push(i) }
     }
-    
     for val in op_seq.iter() {
-        let digit1: i32 = arr[*val as usize];
-        let digit2: i32 = arr[val + 1];
-        let new_digit: i32;
+        let digit1: f32 = arr[*val as usize];
+        let digit2: f32 = arr[val + 1];
+        let new_digit: f32;
         match &op[*val] as &str {
-            "*" => { new_digit = digit1 * digit2 },
-            "/" => { new_digit = digit1 / digit2 },
+            "+" => { new_digit = digit1 + digit2 },
+            "-" => { new_digit = digit1 - digit2 },
             _ => unreachable!(),
         }
 
@@ -161,19 +173,20 @@ fn calc_fin(arr: &mut Vec<i32>, op: &mut Vec<String>) {
         arr[val + 1] = new_digit;
         
         answer = arr[val + 1];
-        println!("Ответ: {answer}");
     }
+    answer
 }
 
 fn main() {
-    print!("Ввод размера: ");
-    let mut arr: Vec<i32> = enter_array();
     loop {
+        print!("Ввод размера: ");
+        let mut arr: Vec<f32> = enter_array();
         print!("Ввод индексов: ");
         arr = choose_elem(&arr);
         print!("Ввод операций (сложение, вычитание, умножение, деление): ");
         let mut favoper = choose_op(arr.len());
-        calc_fin(&mut arr, &mut favoper);
+        let answer = calc_fin(&mut arr, &mut favoper);
+        println!("Ответ: {answer}");
         println!("1 - выйти, иначе - выбрать другие элементы и операции");
         if read_digit_exit!().trim() == "1" { break; }
     }
