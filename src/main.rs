@@ -40,9 +40,17 @@ macro_rules! read_calc_op {
         }
     };
 }
+macro_rules! read_digit_exit {
+    () => {
+        {
+            let mut str = String::new();
+            std::io::stdin().read_line(&mut str).expect("Не удалось прочесть строку");
+            str
+        }
+    };
+}
 
-fn main() {
-    print!("Ввод размера: ");
+fn enter_array() -> Vec<i32> {
     let arrlen = read_digit!();
     println!("\nРазмер массива: {arrlen}");
     let arr: Vec<i32> = loop {
@@ -54,12 +62,15 @@ fn main() {
     for i in 0..arr.len() {
         println!("arr[{i}] = {}", arr[i]);
     }
-    
+    arr
+}
+
+fn choose_elem(arr: &Vec<i32>) -> Vec<i32> {
+    let mut newarr: Vec<i32> = Vec::new();
     let favindex: Vec<i32> = loop {
-        print!("Ввод индексов: ");
         let ind: Vec<i32> = read_digits!();
         for i in &ind {
-            if i >= &arrlen && i < &0 { 
+            if i >= &(arr.len() as i32) && i < &0 { 
                 println!("Ошибка с индексами");
                 continue;
             }
@@ -71,14 +82,17 @@ fn main() {
     println!("Выбраны элементы: ");
     for i in 0..favindex.len() {
         println!("arr[{}] = {}", favindex[i], arr[favindex[i] as usize]);
+        newarr.push(arr[favindex[i] as usize]);
     }
-    
+    newarr
+}
+
+fn choose_op(arrlen: usize) -> Vec<String> {
     let mut opers = std::collections::HashMap::new();
     opers.insert("сложение", '+');
     opers.insert("вычитание", '-');
     opers.insert("умножение", '*');
     opers.insert("деление", '/');
-    println!("Ввод операций (сложение, вычитание, умножение, деление): ");
 
     let favoper = loop {
         let mut safe_op: Vec<String> = read_calc_op!();
@@ -86,14 +100,81 @@ fn main() {
         for val in &mut safe_op {
             if opers.contains_key::<str>(&val) {
                 for (k, v) in opers.iter() {
-                    if k == val { *val = v.to_string(); }
+                    if k == val {*val = v.to_string();}
                 }
                 continue; 
             }
             safe_op_err = true;
         }
-        if safe_op_err == false && safe_op.len() == (favindex.len() - 1) { break safe_op; }
-        println!("Ошибка с операциями. Имеем: {}. Нужно: {}", safe_op.len(), favindex.len()-1);
+        if safe_op_err == false && safe_op.len() == (arrlen - 1) { break safe_op; }
+        println!("Ошибка с операциями. Имеем: {}. Нужно: {}", safe_op.len(), arrlen - 1);
     };
-   println!("{:?}", favoper);
+    favoper
+}
+// 5*3-9/3*2-5 -> 15-6-5
+fn calc_fin(arr: &mut Vec<i32>, op: &mut Vec<String>) {
+    let mut answer: i32;
+    let mut op_seq: Vec<usize> = Vec::new();
+    for i in 0..op.len() {
+        if op[i] == "*" || op[i] == "/" { op_seq.push(i) }
+    }
+    for val in op_seq.iter() {
+        let digit1: i32 = arr[*val as usize];
+        let digit2: i32 = arr[val + 1];
+        let new_digit: i32;
+        match &op[*val] as &str {
+            "*" => { new_digit = digit1 * digit2 },
+            "/" => { new_digit = digit1 / digit2 },
+            _ => unreachable!(),
+        }
+
+        arr[*val as usize] = new_digit;
+        arr[val + 1] = new_digit;
+        
+        answer = arr[val + 1];
+    }
+    
+    if !op_seq.is_empty() {
+        op_seq.reverse();
+        for val in &op_seq {
+            arr.remove(*val as usize);
+            op.remove(*val as usize);
+        }
+        op_seq.clear();
+    }
+
+    for i in 0..op.len() {
+        if op[i] == "+" || op[i] == "-" { op_seq.push(i) }
+    }
+    
+    for val in op_seq.iter() {
+        let digit1: i32 = arr[*val as usize];
+        let digit2: i32 = arr[val + 1];
+        let new_digit: i32;
+        match &op[*val] as &str {
+            "*" => { new_digit = digit1 * digit2 },
+            "/" => { new_digit = digit1 / digit2 },
+            _ => unreachable!(),
+        }
+
+        arr[*val as usize] = new_digit;
+        arr[val + 1] = new_digit;
+        
+        answer = arr[val + 1];
+        println!("Ответ: {answer}");
+    }
+}
+
+fn main() {
+    print!("Ввод размера: ");
+    let mut arr: Vec<i32> = enter_array();
+    loop {
+        print!("Ввод индексов: ");
+        arr = choose_elem(&arr);
+        print!("Ввод операций (сложение, вычитание, умножение, деление): ");
+        let mut favoper = choose_op(arr.len());
+        calc_fin(&mut arr, &mut favoper);
+        println!("1 - выйти, иначе - выбрать другие элементы и операции");
+        if read_digit_exit!().trim() == "1" { break; }
+    }
 }
