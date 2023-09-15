@@ -131,7 +131,17 @@ fn choose_op(arrlen: usize) -> Vec<String> {
 #[allow(dead_code)]
 fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
     let mut answer: f32 = 0.0;
+    let mut question = String::new();
     let mut op_seq: Vec<usize> = Vec::new();
+    
+    for i in 0..arr.len() {
+        question.push_str(&arr[i].to_string());
+        if arr.len() - 1 == i { break; }
+        question.push_str(&op[i].to_string());
+    }
+    
+    println!("Выражение: {question}");
+    
     for i in 0..op.len() {
         if op[i] == "*" || op[i] == "/" { op_seq.push(i) }
     }
@@ -181,7 +191,9 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
 
 #[test]
 fn test() {
-    assert_eq!(calc_fin([10, 5, 3], ["/", "+"]), 5);
+    let mut arr: Vec<f32> = [10.0, 5.0, 3.0];
+    let mut op: Vec<f32> = ["/", "+"];
+    assert_eq!(calc_fin(&mut arr, &mut op), 5.0);
 }
 
 fn main() {
