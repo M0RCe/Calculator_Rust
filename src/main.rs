@@ -70,8 +70,9 @@ fn enter_array() -> Vec<f32> {
     println!("\nРазмер массива: {arrlen}");
     let arr: Vec<f32> = loop {
         let safe_arr: Vec<f32> = read_digits_float!();    
-        if safe_arr.len() as i32 == arrlen { break safe_arr; }
+        if safe_arr.len() as i32 == arrlen && safe_arr.len() > 1 { break safe_arr; }
         println!("Ошибка с кол-вом элементов массива. Имеем: {}. Нужно: {arrlen}", safe_arr.len());
+        if safe_arr.len() < 2 { println!("Размер массива обязан иметь минимум 2 элемента. Перезагрузи программу"); }
     };
     
     for i in 0..arr.len() {
@@ -127,6 +128,7 @@ fn choose_op(arrlen: usize) -> Vec<String> {
     favoper
 }
 // 5*3-9/3*2-5 -> 15-6-5 -> 4
+#[allow(dead_code)]
 fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
     let mut answer: f32 = 0.0;
     let mut op_seq: Vec<usize> = Vec::new();
@@ -175,6 +177,11 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
         answer = arr[val + 1];
     }
     answer
+}
+
+#[test]
+fn test() {
+    assert_eq!(calc_fin([10, 5, 3], ["/", "+"]), 5);
 }
 
 fn main() {
