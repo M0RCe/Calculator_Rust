@@ -193,8 +193,8 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
 fn test() {
     let mut arr: Vec<f32> = [10.0, 5.0, 3.0].to_vec();
     let mut op: Vec<String> = Vec::new();
-    op.push("/");
-    op.push("+");
+    op.push("/".to_string());
+    op.push("+".to_string());
     assert_eq!(calc_fin(&mut arr, &mut op), 5.0);
 }
 
