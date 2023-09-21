@@ -153,7 +153,7 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
         match &op[*val] as &str {
             "*" => { new_digit = digit1 * digit2 },
             "/" => { new_digit = digit1 / digit2 },
-            _ => { panic!("Неверная запись знака") },
+            other => { panic!("Неверная запись знака. Имеет: {}", other) },
         }
 
         arr[*val as usize] = new_digit;
@@ -179,7 +179,7 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
         match &op[*val] as &str {
             "+" => { new_digit = digit1 + digit2 },
             "-" => { new_digit = digit1 - digit2 },
-            _ => { panic!("Неверная запись знака") },
+            other => { panic!("Неверная запись знака. Имеет: {}", other) },
         }
 
         arr[*val as usize] = new_digit;
