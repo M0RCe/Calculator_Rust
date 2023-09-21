@@ -205,7 +205,7 @@ fn test() {
 fn test2() {
     let mut arr: Vec<f32> = [10.0, 0.0].to_vec();
     let mut op: Vec<String> = Vec::new();
-    op.push("деление".to_string());
+    op.push("%".to_string());
     calc_fin(&mut arr, &mut op);
 }
 
