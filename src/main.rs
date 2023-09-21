@@ -127,8 +127,9 @@ fn choose_op(arrlen: usize) -> Vec<String> {
     };
     favoper
 }
+
 // 5*3-9/3*2-5 -> 15-6-5 -> 4
-#[allow(dead_code)]
+
 fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
     let mut answer: f32 = 0.0;
     let mut question = String::new();
@@ -200,6 +201,7 @@ fn test() {
 }
 
 #[test]
+#[should_panic(expected = "Неверная запись знака")]
 fn test2() {
     let mut arr: Vec<f32> = [10.0, 0.0].to_vec();
     let mut op: Vec<String> = Vec::new();
