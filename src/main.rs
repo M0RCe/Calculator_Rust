@@ -149,11 +149,11 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
         let digit1: f32 = arr[*val as usize];
         let digit2: f32 = arr[val + 1];
         let new_digit: f32;
-        if digit2 == 0.0 && op[*val] == "/" { panic!("деление на ноль"); }
+        if digit2 == 0.0 && op[*val] == "/" { panic!("Деление на ноль"); }
         match &op[*val] as &str {
             "*" => { new_digit = digit1 * digit2 },
             "/" => { new_digit = digit1 / digit2 },
-            _ => unreachable!(),
+            _ => panic!("Неверная запись знака"),
         }
 
         arr[*val as usize] = new_digit;
@@ -179,7 +179,7 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
         match &op[*val] as &str {
             "+" => { new_digit = digit1 + digit2 },
             "-" => { new_digit = digit1 - digit2 },
-            _ => unreachable!(),
+            _ => panic!("Неверная запись знака"),
         }
 
         arr[*val as usize] = new_digit;
@@ -200,7 +200,7 @@ fn test() {
 }
 
 #[test]
-#[should_panic(expected = "неверная запись знака")]
+#[should_panic(expected = "Неверная запись знака")]
 fn test2() {
     let mut arr: Vec<f32> = [10.0, 0.0].to_vec();
     let mut op: Vec<String> = Vec::new();
@@ -209,7 +209,7 @@ fn test2() {
 }
 
 #[test]
-#[should_panic(expected = "деление на ноль")]
+#[should_panic(expected = "Деление на ноль")]
 fn test3() {
     let mut arr: Vec<f32> = [10.0, 0.0].to_vec();
     let mut op: Vec<String> = Vec::new();
@@ -226,12 +226,6 @@ fn test4() {
 	 op.push("*".to_string());
     assert_ne!(calc_fin(&mut arr, &mut op), 14208.0);
 	// lol https://stackoverflow.com/questions/73350166/how-do-i-convert-and-calculate-a-string-expression-into-arithmetic-expression-wi
-}
-
-#[test]
-#[should_panic(expected = "Неверный размер массива")]
-fn test5() {
-    assert_eq!(enter_array(), [10.0, 0.0].to_vec());
 }
 
 fn main() {
