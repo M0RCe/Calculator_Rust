@@ -72,7 +72,7 @@ fn enter_array() -> Vec<f32> {
         let safe_arr: Vec<f32> = read_digits_float!();    
         if safe_arr.len() as i32 == arrlen && safe_arr.len() > 1 { break safe_arr; }
         println!("Ошибка с кол-вом элементов массива. Имеем: {}. Нужно: {arrlen}", safe_arr.len());
-        if safe_arr.len() < 2 { println!("Размер массива обязан иметь минимум 2 элемента. Перезагрузи программу"); }
+        if safe_arr.len() < 2 { panic!("Размер массива обязан иметь минимум 2 элемента"); }
     };
     
     for i in 0..arr.len() {
@@ -149,6 +149,7 @@ fn calc_fin(arr: &mut Vec<f32>, op: &mut Vec<String>) -> f32 {
         let digit1: f32 = arr[*val as usize];
         let digit2: f32 = arr[val + 1];
         let new_digit: f32;
+        if digit2 == 0.0 && op[*val] == "/" { panic!("деление на ноль"); }
         match &op[*val] as &str {
             "*" => { new_digit = digit1 * digit2 },
             "/" => { new_digit = digit1 / digit2 },
@@ -196,6 +197,41 @@ fn test() {
     op.push("/".to_string());
     op.push("+".to_string());
     assert_eq!(calc_fin(&mut arr, &mut op), 5.0);
+}
+
+#[test]
+#[should_panic(expected = "неверная запись знака")]
+fn test2() {
+    let mut arr: Vec<f32> = [10.0, 0.0].to_vec();
+    let mut op: Vec<String> = Vec::new();
+    op.push("деление".to_string());
+    calc_fin(&mut arr, &mut op);
+}
+
+#[test]
+#[should_panic(expected = "деление на ноль")]
+fn test3() {
+    let mut arr: Vec<f32> = [10.0, 0.0].to_vec();
+    let mut op: Vec<String> = Vec::new();
+    op.push("/".to_string());
+    calc_fin(&mut arr, &mut op);
+}
+
+#[test]
+fn test4() {
+    let mut arr: Vec<f32> = [500.0, 10.0, 66.0, 32].to_vec();
+    let mut op: Vec<String> = Vec::new();
+    op.push("+".to_string());
+    op.push("-".to_string());
+	 op.push("*".to_string());
+    assert_ne!(calc_fin(&mut arr, &mut op), 14208.0);
+	// lol https://stackoverflow.com/questions/73350166/how-do-i-convert-and-calculate-a-string-expression-into-arithmetic-expression-wi
+}
+
+#[test]
+#[should_panic(expected = "Неверный размер массива")]
+fn test5() {
+    assert_eq!(enter_array(), [10.0, 0.0].to_vec());
 }
 
 fn main() {
