@@ -223,7 +223,7 @@ fn test4() {
     let mut op: Vec<String> = Vec::new();
     op.push("+".to_string());
     op.push("-".to_string());
-	 op.push("*".to_string());
+	op.push("*".to_string());
     assert_ne!(calc_fin(&mut arr, &mut op), 14208.0);
 	// lol https://stackoverflow.com/questions/73350166/how-do-i-convert-and-calculate-a-string-expression-into-arithmetic-expression-wi
 }
