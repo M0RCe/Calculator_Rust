@@ -219,7 +219,7 @@ fn test3() {
 
 #[test]
 fn test4() {
-    let mut arr: Vec<f32> = [500.0, 10.0, 66.0, 32].to_vec();
+    let mut arr: Vec<f32> = [500.0, 10.0, 66.0, 32.0].to_vec();
     let mut op: Vec<String> = Vec::new();
     op.push("+".to_string());
     op.push("-".to_string());
